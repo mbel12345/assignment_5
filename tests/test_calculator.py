@@ -295,6 +295,18 @@ def test_show_history(calculator):
         'Subtraction(2, 1) = 1',
     ]
 
+@patch('app.calculator.logging.info')
+def test_load_empty_history(log_mock, calculator):
+
+    with open(calculator.config.history_file, 'w') as out_f:
+        out_f.write('')
+    calculator.clear_history()
+
+    calculator.save_history()
+    calculator.load_history()
+
+    log_mock.assert_any_call('Loaded empty history file')
+
 def test_undo_no_stack(calculator):
 
     # Test undo method when there is no history
