@@ -1,5 +1,6 @@
 import datetime
 import pandas as pd
+import pandas.testing as pdt
 import pytest
 
 from decimal import Decimal
@@ -223,3 +224,93 @@ def test_fail_save_history(monkeypatch):
 
     with pytest.raises(Exception, match='Failed to save history: forced csv failure'):
         Calculator().save_history()
+
+def test_history_no_data(calculator):
+
+    # Simulate saving an empty csv history
+
+    with open(calculator.config.history_file, 'w') as out_f:
+        out_f.write('')
+    calculator.clear_history()
+    Calculator().save_history()
+
+    with open(calculator.config.history_file, 'r') as out_f:
+        assert out_f.read().strip() == 'operation,operand1,operand2,result,timestamp'
+
+def test_get_history_dataframe(calculator):
+
+    # Test get_history_dataframe method
+
+    with open(calculator.config.history_file, 'w') as out_f:
+        out_f.write('')
+    calculator.clear_history()
+
+    operation = OperationFactory.create_operation('add')
+    calculator.set_operation(operation)
+    calculator.perform_operation(2, 0)
+
+    operation = OperationFactory.create_operation('subtract')
+    calculator.set_operation(operation)
+    calculator.perform_operation(2, 1)
+
+    calculator.save_history()
+
+    history = calculator.get_history_dataframe()
+    history.drop(columns=['timestamp'], inplace=True)
+    pdt.assert_frame_equal(history, pd.DataFrame([
+        {
+            'operation': 'Addition',
+            'operand1': '2',
+            'operand2': '0',
+            'result': '2',
+        },
+        {
+            'operation': 'Subtraction',
+            'operand1': '2',
+            'operand2': '1',
+            'result': '1',
+        },
+    ]))
+
+def test_show_history(calculator):
+
+    # Test show_history method
+
+    with open(calculator.config.history_file, 'w') as out_f:
+        out_f.write('')
+    calculator.clear_history()
+
+    operation = OperationFactory.create_operation('add')
+    calculator.set_operation(operation)
+    calculator.perform_operation(2, 0)
+
+    operation = OperationFactory.create_operation('subtract')
+    calculator.set_operation(operation)
+    calculator.perform_operation(2, 1)
+
+    calculator.save_history()
+
+    assert calculator.show_history() == [
+        'Addition(2, 0) = 2',
+        'Subtraction(2, 1) = 1',
+    ]
+
+def test_undo_no_stack(calculator):
+
+    # Test undo method when there is no history
+
+    with open(calculator.config.history_file, 'w') as out_f:
+        out_f.write('')
+    calculator.clear_history()
+
+    assert calculator.undo() is False
+
+def test_redo_no_stack(calculator):
+
+    # Test redo method when there is no history
+
+    with open(calculator.config.history_file, 'w') as out_f:
+        out_f.write('')
+    calculator.clear_history()
+
+    assert calculator.redo() is False
