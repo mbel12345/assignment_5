@@ -24,6 +24,7 @@ class CalculatorMemento:
             'timestamp': self.timestamp.isoformat(),
         }
 
+    @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'CalculatorMemento':
 
         # Create Memento from dict
