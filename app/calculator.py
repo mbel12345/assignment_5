@@ -280,6 +280,7 @@ class Calculator:
         memento = self.undo_stack.pop()
         self.redo_stack.append(CalculatorMemento(self.history.copy()))
         self.history = memento.history.copy()
+        return True
 
     def redo(self) -> bool:
 
@@ -291,3 +292,4 @@ class Calculator:
         memento = self.redo_stack.pop()
         self.undo_stack.append(CalculatorMemento(self.history.copy()))
         self.history = memento.history.copy()
+        return True
