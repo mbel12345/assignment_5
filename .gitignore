@@ -85,3 +85,7 @@ docs/_build/
 *.idea/
 *.sublime-project
 *.sublime-workspace
+
+# Data files
+*history.csv
+*.log
