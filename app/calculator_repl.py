@@ -58,7 +58,7 @@ def calculator_repl():
                         print('No calculations in history')
                     else:
                         print('\nCalculation History:')
-                        for i, entry in enumerate(history, i):
+                        for i, entry in enumerate(history, 1):
                             print(f'{i}. {entry}')
                     continue
 
@@ -115,10 +115,6 @@ def calculator_repl():
 
                         # Perform the calculation
                         result = calc.perform_operation(a, b)
-
-                        # Normalize
-                        if isinstance(result, Decimal):
-                            result = result.normalize()
 
                         print(f'\nResult: {result}')
 
