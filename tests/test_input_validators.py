@@ -84,4 +84,3 @@ def test_validate_number_non_numeric_type():
 
     with pytest.raises(ValidationError, match='Invalid number format: '):
         InputValidator.validate_number([], config)
-
